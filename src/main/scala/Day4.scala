@@ -2,18 +2,16 @@ import scala.io.Source
 
 object Day4 extends App {
   val required = Set("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
-  val lines = (Source.fromResource("day4.txt").getLines() ++ List("")).foldLeft((0, new StringBuilder())) { (a, line) =>
-    val (acc, stringBuilder) = a
+  val lines = (Source.fromResource("day4.txt").getLines() ++ List(""))
+  val (result, _) = lines.foldLeft((0, Set.empty[String])) { (acc, line) =>
+    val (valid, fields) = acc
     if (line.length != 0) {
-      stringBuilder.append(line)
-      stringBuilder.append(' ')
-      (acc, stringBuilder)
+      val newFields = line.split(' ').map(_.takeWhile(_ != ':')).toSet
+      (valid, fields ++ newFields)
     } else {
-      stringBuilder.dropRight(1)
-      val x = stringBuilder.result().split(' ').map(_.takeWhile(_ != ':')).toSet
-      val newAcc = if (required subsetOf x) acc+1 else acc
-      (newAcc, stringBuilder.empty)
+      val newValid = if (required subsetOf fields) valid+1 else valid
+      (newValid, Set.empty)
     }
   }
-  println(lines)
+  println(result)
 }
